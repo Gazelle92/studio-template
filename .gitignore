@@ -1,0 +1,7 @@
+node_modules
+dist
+.DS_Store
+.vercel
+# 예전 HTML 버전 잔여 파일 (리액트 앱에서는 사용 안 함)
+/content.js
+/assets/
