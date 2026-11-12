@@ -19,6 +19,26 @@ const original = el => {
   return el.dataset.originalText;
 };
 
+/**
+ * 폭 고정: 무작위 글자는 폭이 제각각이라 스크램블 중 요소 너비가 바뀌며 레이아웃이 덜컥거림.
+ * → 시작할 때 원래 글자의 폭으로 고정하고, 끝나면 원래대로 되돌림
+ */
+function lockWidth(el) {
+  if (el._lock) return;
+  const w = el.getBoundingClientRect().width;
+  if (!w) return;
+  el._lock = { width: el.style.width, display: el.style.display, overflow: el.style.overflow, whiteSpace: el.style.whiteSpace };
+  if (getComputedStyle(el).display === "inline") el.style.display = "inline-block";
+  el.style.width = `${w}px`;
+  el.style.whiteSpace = "nowrap";
+  el.style.overflow = "hidden";
+}
+function unlockWidth(el) {
+  if (!el._lock) return;
+  Object.assign(el.style, el._lock);
+  el._lock = null;
+}
+
 /** 실행 중인 효과를 즉시 멈추고 원문 복원 */
 export function killScramble(el) {
   if (!el) return;
@@ -28,6 +48,7 @@ export function killScramble(el) {
   el._scrRaf = el._scrInterval = el._scrSafety = null;
   if (el.dataset.originalText) el.textContent = el.dataset.originalText;
   el.style.whiteSpace = "";
+  unlockWidth(el);
 }
 
 /** 프레임 기반 실행기: fn(elapsedMs) 가 [문자열, 끝났는지] 반환
@@ -39,7 +60,7 @@ function runFrames(el, fn, maxMs = 1200) {
     const [text, done] = fn(now - t0);
     el.textContent = text;
     if (!done) el._scrRaf = requestAnimationFrame(frame);
-    else { el._scrRaf = null; clearTimeout(el._scrSafety); }
+    else { el._scrRaf = null; clearTimeout(el._scrSafety); unlockWidth(el); }
   };
   el._scrRaf = requestAnimationFrame(frame);
 }
@@ -54,6 +75,8 @@ export function scrambleReveal(el) {
   const stagger = n > 1 ? (duration - charTotalLifetime) / (n - 1) : 0;
   const cache = new Array(n).fill("");
   const lastSlot = new Array(n).fill(-1);
+  el.textContent = text;
+  lockWidth(el);
   el.style.whiteSpace = "nowrap";
   el.textContent = "";
   runFrames(el, t => {
@@ -81,6 +104,7 @@ export function scrambleViewport(el) {
   const { duration, cycles } = C.scroll;
   const interval = duration / (cycles + 1);
   const scrambleSpan = interval * (cycles + 1);
+  lockWidth(el);
   const cache = chars.map((c, i) => (i === 0 || c === " " ? c : ""));
   const lastSlot = new Array(n).fill(-1);
   runFrames(el, t => {
@@ -111,10 +135,11 @@ export function scrambleRe(el) {
   const stagger = n > 1 ? (duration - firstEnd) / (n - 1) : 0;
   const ends = chars.map((_, i) => firstEnd + i * stagger);
   const t0 = performance.now();
+  lockWidth(el);
   el.textContent = chars.map(rnd).join("");
   el._scrInterval = setInterval(() => {
     const t = performance.now() - t0;
     el.textContent = chars.map((c, i) => (t >= ends[i] ? c : rnd())).join("");
-    if (t >= duration + 10) { clearInterval(el._scrInterval); el.textContent = text; }
+    if (t >= duration + 10) { clearInterval(el._scrInterval); el.textContent = text; unlockWidth(el); }
   }, charTotalLifetime);
 }

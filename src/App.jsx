@@ -69,6 +69,8 @@ import { CasesIndex, CursorReadout, Hero2, ProgressBar, Statement2 } from "./com
 import { GridOverlay, Hero3, Intro3, MorphTitle, Showreel3 } from "./components/v3";
 import VariantSwitcher from "./components/VariantSwitcher";
 import Effects3 from "./components/v3fx";
+import { FooterExtra4, Intro4, SectionHead4, Services4, Stats4, Statement4 } from "./components/v4";
+import { useReveal4 } from "./components/fx4";
 import { initLenis } from "./lib/scroll";
 import { getVariant } from "./variant";
 
@@ -81,6 +83,17 @@ const DEFAULT_EXTRAS = {
   kinetic: ["MONOFORM", "IT'S", "Re-form"],
   since: "Since 2023",
   coords: "37.5665°N, 126.9780°E",
+  // 4안
+  about4: "a design studio shaping brands and digital experiences through motion, clarity, and timeless craft. Based online, working globally.",
+  servicesTitle: "Our Services",
+  statsTitle: "In Numbers",
+  servicesNote: "If you're looking for clarity in design, let's build it together.",
+  services4: ["Visual Identity", "Typography & Color System", "Motion Design", "Campaign Concept", "Style Frames", "Tone & Narrative", "Guidelines", "Packaging"],
+  stats4: [
+    { n: 25, label: "International Awards", text: "Recognized by global juries for clarity, craft and concept.", cta: "Our Awards", seed: "mf-stat-1", href: "#" },
+    { n: 42, label: "Clients Worldwide", text: "Built on relationships, not transactions — teams who value dialogue and trust.", cta: "Our Clients", seed: "mf-stat-2", href: "#" },
+    { n: 83, label: "Completed Projects", text: "Ideas shaped, stories refined and systems brought to life.", cta: "Our Work", seed: "mf-stat-3", href: "#cases" },
+  ],
 };
 
 /**
@@ -93,6 +106,7 @@ export default function App({ site = SITE }) {
   const variant = getVariant();
   const extras = { ...DEFAULT_EXTRAS, ...(site.extras || {}) };
   useRise(variant === "3");
+  useReveal4(variant === "4");
 
   useEffect(() => {
     document.documentElement.dataset.variant = variant;
@@ -140,6 +154,31 @@ export default function App({ site = SITE }) {
         </main>
         <Footer site={site} />
         <Effects3 />
+        <VariantSwitcher current={variant} />
+      </div>
+    );
+  }
+
+  if (variant === "4") {
+    // 모든 섹션: SectionHead4(굵은 제목 + 번호) → 내용, 같은 등장·hover 규칙 (fx4.js)
+    return (
+      <div className="page" id="top">
+        <Header site={site} />
+        <main>
+          <Intro4 site={site} extras={extras} />
+          <Statement4 lines={site.statement.lines} />
+          <section className="sec4"><SectionHead4 title="Showreel" no={1} /></section>
+          <Showreel showreel={site.showreel} />
+          <section className="sec4"><SectionHead4 title={site.cases.title} no={2} id="cases-head" /></section>
+          <Cases cases={site.cases} />
+          <Services4 cases={site.cases} extras={extras} />
+          <section className="sec4"><SectionHead4 title={extras.statsTitle} no={4} /></section>
+          <Stats4 extras={extras} />
+          <section className="sec4"><SectionHead4 title={site.recognitions.label} no={5} /></section>
+          <Recognitions data={site.recognitions} />
+          <AboutTeaser about={site.about} />
+        </main>
+        <Footer site={site} giant extra={<FooterExtra4 site={site} />} />
         <VariantSwitcher current={variant} />
       </div>
     );

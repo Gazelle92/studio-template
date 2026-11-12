@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Arrow, CursorImage, Link, Scramble, placeholder } from "./primitives";
 import { registerHover } from "../lib/pointer";
 import { killScramble, scrambleRe, scrambleReveal } from "../lib/scramble";
@@ -48,6 +48,7 @@ function CaseRow({ item, cursor }) {
       <div className="case__list rec">{item.recognitions.map(r => <Scramble key={r} text={r} re />)}</div>
       <div className="case__scope-label">Project scope</div>
       <div className="case__list scope">{item.scope.map(r => <Scramble key={r} text={r} re />)}</div>
+      <span className="case__sep" aria-hidden="true" />
     </Link>
   );
 }
@@ -59,13 +60,9 @@ export default function Cases({ cases }) {
       <div className="grid">
         <h2 className="section-title">{cases.title}</h2>
         <div className="case-list">
-          {/* 원본: 행(300) + 간격 20 + 구분선 1px + 간격 20 */}
-          {cases.items.map(it => (
-            <Fragment key={it.no}>
-              <CaseRow item={it} cursor={cursor} />
-              <div className="case-sep" />
-            </Fragment>
-          ))}
+          {/* 원본: 행(300) + 간격 20 + 구분선 1px + 간격 20
+              → 간격과 구분선을 <a> 안(padding + 선)으로 넣어 행 사이 빈틈이 없게 (hover 이미지 끊김 방지) */}
+          {cases.items.map(it => <CaseRow key={it.no} item={it} cursor={cursor} />)}
           <Link className="case-archive" id="archive" href={cases.archive.href}>
           <span>{cases.archive.label}</span>
             <Arrow />

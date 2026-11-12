@@ -172,7 +172,7 @@ function Marquee({ items, speed }) {
 }
 
 /** 푸터 — giant=true(3안)면 마키 대신 화면 너비를 꽉 채우는 대형 로고 */
-export function Footer({ site, giant = false }) {
+export function Footer({ site, giant = false, extra = null }) {
   const f = site.footer;
   const links = arr => arr.map(l => <Link key={l.label} href={l.href}>{l.label}</Link>);
   return (
@@ -192,6 +192,7 @@ export function Footer({ site, giant = false }) {
         <p className="blurb l">{f.blurbLeft}</p>
         <p className="blurb r">{f.blurbRight}</p>
       </div>
+      {extra}
       {giant
         ? <div className="footer-giant"><FitText lines={[`*${site.brand.name}*`]} /></div>
         : <Marquee items={f.marquee} speed={f.marqueeSpeed} />}
