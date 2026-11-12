@@ -38,9 +38,10 @@ export default function FitText({ lines, reveal = false, pitch = 0, className = 
       block.style.fontSize = "100px";
       let max = 0;
       rows.forEach(l => {
-        l.style.justifyContent = "flex-start"; l.style.gap = ".22em";
-        max = Math.max(max, l.scrollWidth);
-        l.style.justifyContent = ""; l.style.gap = "";
+        // 내용 실제 폭을 재기 위해 잠시 max-content로 (짧은 한 줄도 꽉 차게 맞추기 위함)
+        l.style.justifyContent = "flex-start"; l.style.gap = ".22em"; l.style.width = "max-content";
+        max = Math.max(max, l.getBoundingClientRect().width);
+        l.style.justifyContent = ""; l.style.gap = ""; l.style.width = "";
       });
       if (max) block.style.fontSize = `${(100 * avail) / max}px`;
       if (pitch) block.style.lineHeight = `${pitch * avail}px`;

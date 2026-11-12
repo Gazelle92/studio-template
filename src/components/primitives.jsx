@@ -119,3 +119,18 @@ export function badge(label = "") {
     <text x="200" y="${200 + size * 0.35}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="${size}" fill="#fff">${safe}</text></svg>`;
   return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
 }
+
+/** 영상이 5초 안에 재생 가능한 상태가 안 되면 실패로 처리 (주소가 막혀 무한 로딩되는 경우 대비) */
+export function useVideoTimeout(ref, src, setFailed, ms = 5000) {
+  useEffect(() => {
+    if (!src) return;
+    const t = setTimeout(() => {
+      const v = ref.current?.querySelector ? ref.current.querySelector("video") : ref.current;
+      if (!v || v.readyState < 2) {
+        console.warn(`[video] ${ms / 1000}초 안에 영상을 불러오지 못해 대체 이미지를 보여줘요: ${src}`);
+        setFailed(true);
+      }
+    }, ms);
+    return () => clearTimeout(t);
+  }, [src]);
+}

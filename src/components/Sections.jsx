@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import FitText from "./FitText";
-import { Arrow, CursorImage, Link, Scramble, badge } from "./primitives";
+import { Arrow, CursorImage, Link, Scramble, badge, useVideoTimeout } from "./primitives";
 import { registerHover } from "../lib/pointer";
 
 export function Hero({ site }) {
@@ -34,6 +34,7 @@ export function Hero({ site }) {
 function ShowreelVideo({ src, poster }) {
   const ref = useRef(null);
   const [failed, setFailed] = useState(false);
+  useVideoTimeout(ref, src, setFailed);
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
@@ -74,12 +75,28 @@ export function Showreel({ showreel: s }) {
   );
 }
 
-export function Statement({ lines }) {
+/**
+ * 스테이트먼트
+ *  layout="fit"     : 원본 — 양끝 정렬 대형 텍스트
+ *  layout="marquee" : 3안 — 한 줄로 이어 흐르는 대형 마키
+ */
+export function Statement({ lines, layout = "fit" }) {
+  if (layout === "marquee") {
+    const text = lines.join(" ")
+      .replace(/\{line\}/g, "—").replace(/\{globe\}/g, "●").replace(/\{dot\}/g, "●")
+      .replace(/\*/g, "").replace(/\s+/g, " ").trim();
+    const items = [{ style: "serif statement-mq", text }, { style: "mark statement-mq-mark", text: "✦" }];
+    return (
+      <section className="statement statement--marquee">
+        <Marquee items={items} speed={{ desktop: 120, tablet: 100, mobileLandscape: 80, mobile: 60 }} />
+      </section>
+    );
+  }
   return <section className="statement"><FitText lines={lines} pitch={0.0549} /></section>;
 }
 
 /** 수상 행 — 원본: hover 시 200×200 로고가 커서를 따라옴 (스크램블 없음) */
-function RecRow({ item, cursor }) {
+function RecRow({ item, cursor, tile = false }) {
   const ref = useRef(null);
   const img = item.image || badge(item.name);
   useEffect(() => registerHover(
@@ -88,21 +105,24 @@ function RecRow({ item, cursor }) {
     el => { el.style.cursor = ""; cursor.current?.hide(el); }
   ), [img, cursor]);
   return (
-    <div className="rec-row" ref={ref}>
+    <div className={tile ? "rec-tile" : "rec-row"} ref={ref}>
       <span className="text">{item.name}</span>
       <span className="rec-row__detail">{item.detail.map((d, i) => <span key={i}>{d}</span>)}</span>
     </div>
   );
 }
 
-export function Recognitions({ data }) {
+/** 수상 목록 — layout="list"(원본) | "tiles"(3안: 5칸 타일 그리드) */
+export function Recognitions({ data, layout = "list", heading = null }) {
   const cursor = useRef(null);
+  const tiles = layout === "tiles";
   return (
-    <section className="recognitions">
+    <section className={`recognitions${tiles ? " recognitions--tiles" : ""}`}>
+      {heading}
       <div className="grid">
         <div className="label">{data.label}</div>
-        <div className="rec-list">
-          {data.items.map((i, k) => <RecRow key={k} item={i} cursor={cursor} />)}
+        <div className={tiles ? "rec-tiles" : "rec-list"}>
+          {data.items.map((i, k) => <RecRow key={k} item={i} cursor={cursor} tile={tiles} />)}
         </div>
       </div>
       <CursorImage ref={cursor} className="award" />
@@ -151,7 +171,8 @@ function Marquee({ items, speed }) {
   );
 }
 
-export function Footer({ site }) {
+/** 푸터 — giant=true(3안)면 마키 대신 화면 너비를 꽉 채우는 대형 로고 */
+export function Footer({ site, giant = false }) {
   const f = site.footer;
   const links = arr => arr.map(l => <Link key={l.label} href={l.href}>{l.label}</Link>);
   return (
@@ -171,7 +192,9 @@ export function Footer({ site }) {
         <p className="blurb l">{f.blurbLeft}</p>
         <p className="blurb r">{f.blurbRight}</p>
       </div>
-      <Marquee items={f.marquee} speed={f.marqueeSpeed} />
+      {giant
+        ? <div className="footer-giant"><FitText lines={[`*${site.brand.name}*`]} /></div>
+        : <Marquee items={f.marquee} speed={f.marqueeSpeed} />}
     </footer>
   );
 }
