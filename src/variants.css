@@ -284,7 +284,7 @@
 .rec-tiles { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, 1fr); border-left: var(--stroke) solid var(--c-soft-line); }
 .rec-tile {
   display: flex; flex-direction: column; justify-content: space-between; gap: 40px; aspect-ratio: 1 / .8; padding: 16px;
-  border-right: var(--stroke) solid var(--c-soft-line); border-bottom: var(--stroke) solid var(--c-soft-line);
+  border-bottom: var(--stroke) solid var(--c-soft-line); /* border-right 제거 */
   transition: background-color .25s, color .25s;
 }
 .rec-tile .text { font-size: var(--text-size); text-transform: uppercase; line-height: 1.05; }
@@ -336,14 +336,8 @@
 .v3-grid span { transition: background-color .5s; }
 .v3-grid span.is-on { background: rgba(255, 255, 255, .07); }
 
-/* 수상 타일: 아래에서 노랗게 차오름 + 3D 틸트(JS) */
-[data-variant="3"] .rec-tile { position: relative; overflow: hidden; will-change: transform; }
-[data-variant="3"] .rec-tile::before {
-  content: ""; position: absolute; inset: 0; z-index: 0; background: var(--accent);
-  transform: scaleY(0); transform-origin: 50% 100%; transition: transform .5s cubic-bezier(.19, 1, .22, 1);
-}
-[data-variant="3"] .rec-tile:hover::before { transform: scaleY(1); }
-[data-variant="3"] .rec-tile > * { position: relative; z-index: 1; }
+/* 수상 타일: 이전 버전으로 복원 — hover 시 검은 배경 + 노란 글씨 */
+[data-variant="3"] .rec-tile:hover { background: #000; color: var(--accent); }
 
 /* About: 노란 띠가 왼쪽에서 차오름 */
 [data-variant="3"] .about-link {

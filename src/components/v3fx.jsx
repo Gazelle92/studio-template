@@ -5,7 +5,6 @@
    3. 히어로 패럴랙스    : 키네틱 줄·사선이 마우스 위치에 따라 움직임
    4. 스크롤 속도 반응   : 빠르게 스크롤하면 마키·키네틱 속도↑, 위로 스크롤하면 역방향, 카드 기울어짐
    5. 그리드 열 하이라이트: 마우스가 있는 그리드 열이 노랗게 빛남
-   6. 수상 타일 틸트     : 마우스 위치에 따라 3D로 기울어짐
    7. intro3 고정 진행도 : 고정된 동안 제목이 살짝 작아지고 노란 글자가 기울어짐
    ========================================================================== */
 import { useEffect, useRef } from "react";
@@ -44,7 +43,6 @@ export default function Effects3() {
     const kinEl = document.querySelector(".kin");
     const cardMedia = [...document.querySelectorAll(".card__media")];
     const cols = [...document.querySelectorAll(".v3-grid span")];
-    const tiles = [...document.querySelectorAll(".rec-tile")];
     const pin = document.querySelector(".intro3-pin");
     const pinTitle = document.querySelector(".intro3__title");
     const pinBack = document.querySelector(".intro3__back");
@@ -121,17 +119,6 @@ export default function Effects3() {
         activeCol = col;
       }
 
-      // ---------- 수상 타일 3D 틸트 ----------
-      tiles.forEach(t => {
-        const r = t.getBoundingClientRect();
-        const inside = mouse.x >= r.left && mouse.x <= r.right && mouse.y >= r.top && mouse.y <= r.bottom;
-        const tx = inside ? ((mouse.y - r.top) / r.height - 0.5) * -14 : 0;
-        const ty = inside ? ((mouse.x - r.left) / r.width - 0.5) * 14 : 0;
-        const cur = t._tilt || { x: 0, y: 0 };
-        cur.x = lerp(cur.x, tx, 0.15); cur.y = lerp(cur.y, ty, 0.15);
-        t._tilt = cur;
-        t.style.transform = `perspective(700px) rotateX(${cur.x.toFixed(2)}deg) rotateY(${cur.y.toFixed(2)}deg)`;
-      });
     });
   }, []);
 
