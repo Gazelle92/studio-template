@@ -59,11 +59,7 @@ const SITE6 = {
       { label: "템플릿 둘러보기", href: "#templates" },
       { label: "제작 상담", href: "#contact", ghost: true },
     ],
-    statsTitle: "Why Unique",
-    stats4: [
-      { n: 14, label: "Years of agency craft", text: "2012년부터 LG, KT, Amore Pacific의 사이트를 만든 팀이 템플릿을 설계합니다.", cta: "Our Work", seed: "mf6-stat-2", href: "#cases" },
-      { n: 30, label: "Real projects behind", text: "모든 템플릿의 구조와 인터랙션은 실제 프로젝트에서 검증한 것만 담았습니다.", cta: "Templates", seed: "mf6-stat-3", href: "#templates" },
-    ],
+    // In Numbers: 5안 그대로 (statsTitle · stats4는 SITE5.extras 값을 씀)
   },
 
   // ---------------- 6안 전용 ----------------

@@ -180,14 +180,16 @@ export default function App({ site: baseSite = SITE }) {
           <Intro4 site={site} extras={extras} />
           <Statement4 lines={site.statement.lines} />
           <Templates6 data={site.templates} onOpen={setDemo} />
-          <Why6 data={site.why} />
-          <Process6 data={site.process} />
-          <Pricing6 data={site.pricing} ctaHref={site.stickyCta.href} />
-          <section className="sec4"><SectionHead4 title={site.cases.title} no={5} id="cases-head" /></section>
+          <section className="sec4"><SectionHead4 title={extras.statsTitle} no={2} /></section>
+          <Stats4 extras={extras} />
+          <Why6 data={site.why} no={3} />
+          <Process6 data={site.process} no={4} />
+          <Pricing6 data={site.pricing} ctaHref={site.stickyCta.href} no={5} />
+          <section className="sec4"><SectionHead4 title={site.cases.title} no={6} id="cases-head" /></section>
           <Cases cases={site.cases} />
-          <section className="sec4"><SectionHead4 title={site.recognitions.label} no={6} /></section>
+          <section className="sec4"><SectionHead4 title={site.recognitions.label} no={7} /></section>
           <Recognitions data={site.recognitions} />
-          <Faq6 data={site.faq} no={7} />
+          <Faq6 data={site.faq} no={8} />
           <AboutTeaser about={site.about} />
         </main>
         <Footer site={site} giant extra={<FooterExtra4 site={site} />} />

@@ -217,8 +217,8 @@ function StepVisual({ kind, images = [], brands = [], demos = [] }) {
   );
 }
 
-export function Process6({ data }) { return <SplitSteps6 id="process" no={3} data={data} />; }
-export function Why6({ data }) { return <SplitSteps6 id="why" no={2} data={data} />; }
+export function Process6({ data, no = 4 }) { return <SplitSteps6 id="process" no={no} data={data} />; }
+export function Why6({ data, no = 3 }) { return <SplitSteps6 id="why" no={no} data={data} />; }
 
 function SplitSteps6({ id, no, data }) {
   const ref = useRef(null);
@@ -284,10 +284,10 @@ function SplitSteps6({ id, no, data }) {
 }
 
 /* ---------------- 가격 ---------------- */
-export function Pricing6({ data, ctaHref }) {
+export function Pricing6({ data, ctaHref, no = 5 }) {
   return (
     <section className="price6-sec" id="pricing">
-      <SectionHead4 title={data.title} no={4} />
+      <SectionHead4 title={data.title} no={no} />
       <div className="price6-grid">
         {data.plans.map(p => (
           <article className={`price6${p.featured ? " is-featured" : ""}`} key={p.name}>
