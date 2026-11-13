@@ -60,6 +60,13 @@ export function Intro4({ site, extras }) {
   return (
     <section className="intro4">
       <p className="intro4__text"><b>{site.brand.name}®</b> — {extras.about4}</p>
+      {extras.introCtas && (
+        <div className="intro6__ctas">
+          {extras.introCtas.map(c => (
+            <Link key={c.label} className={`pill4${c.ghost ? " pill4--ghost" : ""}`} href={c.href}><span>{c.label}</span><Arrow /></Link>
+          ))}
+        </div>
+      )}
       <Deck seeds={seeds} />
       <div className="intro4__logo" aria-hidden="true">{site.brand.name}®</div>
     </section>
@@ -240,7 +247,7 @@ export function FooterExtra4({ site }) {
   return (
     <div className="footer4">
       <form className="footer4__form" onSubmit={e => { e.preventDefault(); setSent(true); }}>
-        <input type="email" required placeholder={sent ? "Thanks — we'll be in touch" : "Your email here"} disabled={sent} />
+        <input type="email" required placeholder={sent ? (site.footer.subscribe?.thanks || "Thanks — we'll be in touch") : (site.footer.subscribe?.placeholder || "Your email here")} disabled={sent} />
         <button type="submit" aria-label="Subscribe"><Arrow /></button>
       </form>
       <div className="footer4__social">
@@ -249,4 +256,101 @@ export function FooterExtra4({ site }) {
       </div>
     </div>
   );
+}
+
+/**
+ * 5안 커스텀 커서 — 3안 커서를 흑백으로, 더 빠르게 따라옴
+ *  - 기본: 작은 원 (배경과 반전색)
+ *  - 링크·버튼 위: 커짐
+ *  - 쇼릴 위: 큰 원 + PLAY
+ *  - 호버 이미지가 뜨는 줄(케이스·Work With) 위: 원이 작아져 이미지를 가리지 않음
+ */
+const CURSOR5 = [
+  [".showreel__media", "PLAY"],
+  [".case, .rec-row", "img"],
+  ["a, button, input, .pill4", "link"],
+];
+const CURSOR5_FOLLOW = 0.42;   // 3안은 0.22 → 숫자가 클수록 빠르게 따라옴 (1이면 즉시)
+const CURSOR5_SCALE = 0.3;
+
+export function Cursor5() {
+  const dot = useRef(null);
+  const label = useRef(null);
+  const fine = typeof window !== "undefined" && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  useEffect(() => {
+    if (!fine) return;
+    document.documentElement.classList.add("has-cursor5");
+    const mark = () => CURSOR5.forEach(([sel, kind]) =>
+      document.querySelectorAll(sel).forEach(el => { if (!el.dataset.cursor5) el.dataset.cursor5 = kind; }));
+    mark();
+    const t = setTimeout(mark, 1500);   // 늦게 그려지는 요소 대비
+    const c = { x: -100, y: -100, s: 1 };
+    let first = true;
+    const off = onFrame(() => {
+      if (mouse.x < 0) return;
+      if (first) { c.x = mouse.x; c.y = mouse.y; first = false; }
+      const kind = document.elementFromPoint(mouse.x, mouse.y)?.closest("[data-cursor5]")?.dataset.cursor5 || "";
+      const big = kind && kind !== "link" && kind !== "img";
+      const target = big ? 6 : kind === "link" ? 2.6 : kind === "img" ? 0.5 : 1;
+      c.x += (mouse.x - c.x) * CURSOR5_FOLLOW;
+      c.y += (mouse.y - c.y) * CURSOR5_FOLLOW;
+      c.s += (target - c.s) * CURSOR5_SCALE;
+      const pos = `translate3d(${c.x.toFixed(1)}px, ${c.y.toFixed(1)}px, 0) translate(-50%, -50%)`;
+      dot.current.style.transform = `${pos} scale(${c.s.toFixed(3)})`;
+      dot.current.classList.toggle("is-big", !!big);
+      label.current.style.transform = pos;
+      label.current.textContent = big ? kind : "";
+      label.current.style.opacity = big ? "1" : "0";
+    });
+    return () => { off(); clearTimeout(t); document.documentElement.classList.remove("has-cursor5"); };
+  }, [fine]);
+  if (!fine) return null;
+  return (
+    <>
+      <div className="cursor5" ref={dot} aria-hidden="true" />
+      <div className="cursor5__label" ref={label} aria-hidden="true" />
+    </>
+  );
+}
+
+/**
+ * 5안 리스트 물결 호버 — 마우스가 올라간 줄이 가장 많이, 위아래 줄은 점점 덜 오른쪽으로 밀림
+ *  - Work With 목록에 적용 (케이스 목록은 4안처럼 호버한 줄만 살짝 이동)
+ *  - 스크롤만 해도(마우스 고정) 줄이 바뀌면 같이 반응하도록 매 프레임 확인
+ */
+const WAVE5 = [32, 20, 10, 4];   // 호버한 줄, ±1칸, ±2칸, ±3칸 (px)
+// 글자색: 호버한 줄은 검정, 멀어질수록 점점 연한 회색 (마지막 값 = 나머지 줄 전부)
+const WAVE5_COLORS = ["#000", "#7a7a7a", "#a3a3a3", "#bdbdbd", "#cfcfcf"];
+const WAVE5_LISTS = [
+  [".rec-list", ".rec-row", ".text", true],   // true = 글자색도 바뀜
+];
+
+export function useWave5(enabled) {
+  useEffect(() => {
+    if (!enabled) return;
+    const lists = WAVE5_LISTS.map(([list, row, title, color]) => {
+      const el = document.querySelector(list);
+      if (!el) return null;
+      const rows = [...el.querySelectorAll(row)];
+      return { el, rows, titles: rows.map(r => r.querySelector(title)), color, active: -2 };
+    }).filter(Boolean);
+    const set = (l, idx) => {
+      l.titles.forEach((t, i) => {
+        const d = idx < 0 ? 99 : Math.abs(i - idx);
+        t?.style.setProperty("--wave5", `${WAVE5[d] ?? 0}px`);
+        if (l.color) {
+          if (idx < 0) t?.style.removeProperty("--wave5c");
+          else t?.style.setProperty("--wave5c", WAVE5_COLORS[Math.min(d, WAVE5_COLORS.length - 1)]);
+        }
+      });
+      l.active = idx;
+    };
+    return onFrame(() => {
+      const hit = mouse.x < 0 ? null : document.elementFromPoint(mouse.x, mouse.y);
+      lists.forEach(l => {
+        const row = hit && l.el.contains(hit) ? l.rows.findIndex(r => r.contains(hit)) : -1;
+        if (row !== l.active) set(l, row);
+      });
+    });
+  }, [enabled]);
 }

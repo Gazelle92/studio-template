@@ -19,11 +19,15 @@ const RULES = {
     ".stat4__label", ".stat4__text", ".rec-row .text", ".rec-row__detail", ".about-link .text",
     ".footer-top > *", ".footer-main .brand", ".footer-main .cta > span", ".footer-main .navA > *", ".footer-main .navB > *",
     ".footer-main .blurb", ".footer4__social > *",
+    // 6안
+    ".tpl6__name", ".tpl6__note", ".step6__title", ".step6__ko", ".step6__text", ".proc6__lead",
+    ".price6__name", ".price6__desc", ".price6__note", ".faq6__qt",
   ],
   // 글자가 바뀌는(스크램블) 요소·버튼·입력칸은 통째로 페이드업
-  up: [".case__no", ".case__type", ".case__list.scope", ".pill4", ".case-archive", ".footer4__form"],
+  up: [".case__no", ".case__type", ".case__list.scope", ".pill4:not(.sticky6)", ".case-archive", ".footer4__form",
+    ".tpl6__no", ".tpl6__mood", ".tpl6__fit", ".tpl6__price", ".tpl6__left", ".tpl6__go", ".step6__no", ".step6__points", ".step6__visual", ".price6__price", ".price6__items"],
   img: [".showreel__media"],
-  stagger: [".pills__row"],
+  stagger: [".pills__row", ".faq6-list > .faq6", ".proc6__nav > li"],
 };
 const PARALLAX = [[".showreel__media", -0.06]];
 

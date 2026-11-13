@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 /** 3안: 스크롤하면 아래에서 위로 올라오는 포인트 텍스트 */
 const RISE_SELECTORS = [
@@ -61,6 +61,9 @@ function useRise(enabled) {
   }, [enabled]);
 }
 import SITE from "./content";
+import SITE5 from "./content5";
+import SITE6 from "./content6";
+import { Demo6, Faq6, Pricing6, Process6, StickyCta6, Templates6, Why6 } from "./components/v6";
 import Header, { Clock } from "./components/Header";
 import Cases from "./components/Cases";
 import CasesGrid from "./components/CasesGrid";
@@ -69,7 +72,7 @@ import { CasesIndex, CursorReadout, Hero2, ProgressBar, Statement2 } from "./com
 import { GridOverlay, Hero3, Intro3, MorphTitle, Showreel3 } from "./components/v3";
 import VariantSwitcher from "./components/VariantSwitcher";
 import Effects3 from "./components/v3fx";
-import { FooterExtra4, Intro4, SectionHead4, Services4, Stats4, Statement4 } from "./components/v4";
+import { Cursor5, useWave5, FooterExtra4, Intro4, SectionHead4, Services4, Stats4, Statement4 } from "./components/v4";
 import { useReveal4 } from "./components/fx4";
 import { initLenis } from "./lib/scroll";
 import { getVariant } from "./variant";
@@ -102,14 +105,23 @@ const DEFAULT_EXTRAS = {
  *  2안 joshgrafik 스타일 : 큰 그로테스크, 글자 등장, 스크롤 채움 문장, 진행 바, 좌표, 인덱스 표
  *  3안 TBWA\HAKUHODO 스타일 : 그리드 선, 키네틱 타이포, 슬릿 이미지, 굵기 출렁이는 제목
  */
-export default function App({ site = SITE }) {
+export default function App({ site: baseSite = SITE }) {
   const variant = getVariant();
+  // 5안 = 4안 디자인 + mono-form 내용
+  const site = variant === "5" ? SITE5 : variant === "6" ? SITE6 : baseSite;
+  const look = variant === "5" || variant === "6" ? "4" : variant;
+  const mono = variant === "5" || variant === "6";   // mono-form 내용(5·6안) 공통 스타일·커서·물결
+  const [demo, setDemo] = useState(null);
+  const closeDemo = useCallback(() => setDemo(null), []);
   const extras = { ...DEFAULT_EXTRAS, ...(site.extras || {}) };
   useRise(variant === "3");
-  useReveal4(variant === "4");
+  useReveal4(look === "4");
+  useWave5(mono);
 
   useEffect(() => {
-    document.documentElement.dataset.variant = variant;
+    document.documentElement.dataset.variant = look;
+    document.documentElement.dataset.content = mono ? "5" : "";
+    document.documentElement.dataset.page = variant === "6" ? "6" : "";
     document.title = site.meta.title;
     initLenis();
   }, [site, variant]);
@@ -159,7 +171,35 @@ export default function App({ site = SITE }) {
     );
   }
 
-  if (variant === "4") {
+  if (variant === "6") {
+    // 6안: 템플릿 판매 홈 — 무엇을 파는지 → 왜 다른지 → 누가 만드는지 → 어떻게 사는지 → 문의
+    return (
+      <div className="page" id="top">
+        <Header site={site} />
+        <main>
+          <Intro4 site={site} extras={extras} />
+          <Statement4 lines={site.statement.lines} />
+          <Templates6 data={site.templates} onOpen={setDemo} />
+          <Why6 data={site.why} />
+          <Process6 data={site.process} />
+          <Pricing6 data={site.pricing} ctaHref={site.stickyCta.href} />
+          <section className="sec4"><SectionHead4 title={site.cases.title} no={5} id="cases-head" /></section>
+          <Cases cases={site.cases} />
+          <section className="sec4"><SectionHead4 title={site.recognitions.label} no={6} /></section>
+          <Recognitions data={site.recognitions} />
+          <Faq6 data={site.faq} no={7} />
+          <AboutTeaser about={site.about} />
+        </main>
+        <Footer site={site} giant extra={<FooterExtra4 site={site} />} />
+        <StickyCta6 cta={site.stickyCta} />
+        <Demo6 item={demo} onClose={closeDemo} ctaHref={site.stickyCta.href} />
+        <Cursor5 />
+        <VariantSwitcher current={variant} />
+      </div>
+    );
+  }
+
+  if (look === "4") {
     // 모든 섹션: SectionHead4(굵은 제목 + 번호) → 내용, 같은 등장·hover 규칙 (fx4.js)
     return (
       <div className="page" id="top">
@@ -179,6 +219,7 @@ export default function App({ site = SITE }) {
           <AboutTeaser about={site.about} />
         </main>
         <Footer site={site} giant extra={<FooterExtra4 site={site} />} />
+        {variant === "5" && <Cursor5 />}
         <VariantSwitcher current={variant} />
       </div>
     );

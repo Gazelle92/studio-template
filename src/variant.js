@@ -1,6 +1,6 @@
 /* ==========================================================================
    시안(Variant) 전환
-   - 주소 뒤에 ?v=1 ~ ?v=4 를 붙이거나, 화면 왼쪽 아래 버튼으로 전환
+   - 주소 뒤에 ?v=1 ~ ?v=6 를 붙이거나, 화면 왼쪽 아래 버튼으로 전환
    - 마지막으로 본 시안을 기억 (localStorage)
    ========================================================================== */
 export const VARIANTS = [
@@ -8,6 +8,8 @@ export const VARIANTS = [
   { id: "2", name: "2안", desc: "Subtle" },
   { id: "3", name: "3안", desc: "Bold" },
   { id: "4", name: "4안", desc: "Möbius" },
+  { id: "5", name: "5안", desc: "mono-form" },
+  { id: "6", name: "6안", desc: "Template platform" },
 ];
 
 const valid = id => VARIANTS.some(v => v.id === id);
