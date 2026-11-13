@@ -18,13 +18,60 @@ export const SectionHead4 = ({ title, no, id }) => (
 );
 
 /** 부채꼴로 겹친 사진 카드 — 2.6초마다 맨 앞 카드가 맨 뒤로 */
-function Deck({ seeds }) {
+/** 부채꼴 위치 (0 = 맨 앞) — 6안은 더 넓게 */
+const FAN = { rot: [0, -7, 6, -12, 11], dx: [0, -46, 40, -80, 76] };
+const FAN_WIDE = { rot: [0, -8, 8, -15, 15, -22], dx: [0, -70, 70, -135, 135, -195] };
+/** 6안 등장 설정: 시작 지연·카드 간격·이동 시간(초), 시작 위치 */
+const DEAL = {
+  delay: 0.35, gap: 0.11, dur: 1.4,
+  from: i => `translate(-75vw, ${18 + i * 2}vh) rotate(${-38 + i * 3}deg) scale(.82)`,
+};
+
+function Deck({ seeds, demos }) {
   const [order, setOrder] = useState(() => seeds.map((_, i) => i));
   const wrap = useRef(null);
+  // 6안: 카드 안 실제 시안 화면(1440px 폭)을 카드 폭에 맞게 축소
   useEffect(() => {
+    if (!demos) return;
+    const el = wrap.current;
+    const fit = () => el.style.setProperty("--deck-s", String(el.clientWidth / 1440));
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [demos]);
+  // 6안: 덱은 화면에 고정된 채 따라오다가, 템플릿 목록(.tpl6-sec)에 가까워지면 점점 흐려지고 닿으면 사라짐
+  useEffect(() => {
+    if (!demos) return;
+    const el = wrap.current;
+    const FADE = 360;   // 사라지기 시작하는 거리(px): 덱 아래쪽과 목록 위쪽 사이
+    return onFrame(() => {
+      const tpl = document.querySelector(".tpl6-sec");
+      if (!tpl) return;
+      const gap = tpl.getBoundingClientRect().top - el.getBoundingClientRect().bottom;
+      const o = Math.min(1, Math.max(0, gap / FADE));
+      el.style.opacity = o.toFixed(3);
+      el.style.visibility = o <= 0 ? "hidden" : "";
+    });
+  }, [demos]);
+  // 6안 등장: 카드 더미가 왼쪽 화면 밖에서 한 장씩 날아와 부채꼴로 펼쳐짐 (stack → deal → done)
+  const n = seeds.length;
+  const [phase, setPhase] = useState(demos ? "stack" : "done");
+  useEffect(() => {
+    if (phase !== "stack") return;
+    let t;
+    const r = requestAnimationFrame(() => requestAnimationFrame(() => {
+      setPhase("deal");
+      t = setTimeout(() => setPhase("done"), DEAL.delay * 1000 + n * DEAL.gap * 1000 + DEAL.dur * 1000);
+    }));
+    return () => { cancelAnimationFrame(r); clearTimeout(t); };
+  }, [phase, n]);
+  // 다 펼쳐진 뒤부터 맨 앞 카드가 뒤로 넘어가는 순환 시작
+  useEffect(() => {
+    if (phase !== "done") return;
     const id = setInterval(() => setOrder(o => [...o.slice(1), o[0]]), 2600);
     return () => clearInterval(id);
-  }, []);
+  }, [phase]);
   // 마우스 위치에 따라 덱 전체가 살짝 기울어짐
   useEffect(() => {
     let rx = 0, ry = 0;
@@ -37,17 +84,28 @@ function Deck({ seeds }) {
       el.style.transform = `perspective(1200px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
     });
   }, []);
-  const n = seeds.length;
   return (
     <div className="deck" ref={wrap}>
       {seeds.map((seed, i) => {
         const pos = order.indexOf(i);          // 0 = 맨 앞
-        const rot = [0, -7, 6, -12, 11][pos] ?? 0;
-        const dx = [0, -46, 40, -80, 76][pos] ?? 0;
+        const fan = demos ? FAN_WIDE : FAN;
+        const rot = fan.rot[pos] ?? 0;
+        const dx = fan.dx[pos] ?? 0;
+        const rest = `translate(${dx}px, ${pos * 6}px) rotate(${rot}deg) scale(${1 - pos * 0.035})`;
+        // 뒤쪽 카드부터 먼저 날아오고, 맨 앞 카드가 마지막에 가운데 착지
+        const delay = DEAL.delay + (n - 1 - pos) * DEAL.gap;
+        const style = phase === "stack"
+          ? { zIndex: n - pos, transform: DEAL.from(i), opacity: 0, transition: "none" }
+          : phase === "deal"
+            ? { zIndex: n - pos, transform: rest, opacity: 1,
+                transition: `transform ${DEAL.dur}s cubic-bezier(.16, 1, .3, 1) ${delay}s, opacity .35s ease ${delay}s` }
+            : { zIndex: n - pos, transform: rest };
         return (
-          <div key={seed} className="deck__card"
-            style={{ zIndex: n - pos, transform: `translate(${dx}px, ${pos * 6}px) rotate(${rot}deg) scale(${1 - pos * 0.035})` }}>
-            <img src={photo(seed, 900, 1100)} alt="" />
+          <div key={seed} className="deck__card" style={style}>
+            {demos
+              ? <><iframe className="deck__demo" src={`${window.location.pathname}?v=${seed}&embed=1`} title={`${seed}안`} tabIndex={-1} loading="eager" />
+                  <span className="deck__tag">{seed}안</span></>
+              : <img src={photo(seed, 900, 1100)} alt="" />}
           </div>
         );
       })}
@@ -55,8 +113,15 @@ function Deck({ seeds }) {
   );
 }
 
+/** 배열 무작위 섞기 */
+const shuffle = a => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+
 export function Intro4({ site, extras }) {
-  const seeds = ["mf-deck-1", "mf-deck-2", "mf-deck-3", "mf-deck-4", "mf-deck-5"];
+  // deckDemos가 있으면(6안) 카드에 실제 시안 화면을 무작위 순서로.
+  // 단, 데모 창(iframe) 안에서는 사진으로 (6안 안에 6안이 끝없이 들어가지 않도록)
+  const embed = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("embed");
+  const demos = !!extras.deckDemos && !embed;
+  const [seeds] = useState(() => demos ? shuffle(extras.deckDemos) : ["mf-deck-1", "mf-deck-2", "mf-deck-3", "mf-deck-4", "mf-deck-5"]);
   return (
     <section className="intro4">
       <p className="intro4__text"><b>{site.brand.name}®</b> — {extras.about4}</p>
@@ -67,7 +132,7 @@ export function Intro4({ site, extras }) {
           ))}
         </div>
       )}
-      <Deck seeds={seeds} />
+      <Deck seeds={seeds} demos={demos} />
       <div className="intro4__logo" aria-hidden="true">{site.brand.name}®</div>
     </section>
   );

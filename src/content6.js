@@ -54,13 +54,13 @@ const SITE6 = {
   extras: {
     ...SITE5.extras,
     about4: "에이전시가 만든, 하나뿐인 웹사이트 템플릿. 14년 동안 30여 개 브랜드의 사이트를 만든 팀이 설계했습니다.",
+    deckDemos: ["1", "2", "3", "4", "5", "6"],   // 첫 화면 카드: 실제 시안 화면 (순서는 열 때마다 무작위)
     introCtas: [
       { label: "템플릿 둘러보기", href: "#templates" },
       { label: "제작 상담", href: "#contact", ghost: true },
     ],
     statsTitle: "Why Unique",
     stats4: [
-      { n: 1, label: "One per industry", text: "[가안] 한 템플릿은 같은 업종·지역에 한 곳만 판매합니다. 옆 가게와 같은 사이트가 될 일은 없습니다.", cta: "판매 정책", seed: "mf6-stat-1", href: "#faq" },
       { n: 14, label: "Years of agency craft", text: "2012년부터 LG, KT, Amore Pacific의 사이트를 만든 팀이 템플릿을 설계합니다.", cta: "Our Work", seed: "mf6-stat-2", href: "#cases" },
       { n: 30, label: "Real projects behind", text: "모든 템플릿의 구조와 인터랙션은 실제 프로젝트에서 검증한 것만 담았습니다.", cta: "Templates", seed: "mf6-stat-3", href: "#templates" },
     ],
@@ -82,12 +82,8 @@ const SITE6 = {
   // Why Unique: 왼쪽 제목 고정 + 오른쪽 그림 스크롤 (How it works와 같은 구조)
   why: {
     title: "Why Unique",
-    lead: "템플릿이지만, 결과물은 하나뿐입니다. 그렇게 말할 수 있는 이유 세 가지.",
+    lead: "템플릿이지만, 결과물은 하나뿐입니다. 그렇게 말할 수 있는 이유 다섯 가지.",
     steps: [
-      { no: "01", title: "One per industry", ko: "업종별 1곳",
-        text: "[가안] 한 템플릿은 같은 업종·지역에 한 곳만 판매합니다. 옆 가게와 같은 사이트가 될 일은 없습니다.",
-        points: ["업종 + 지역 기준으로 판매 관리", "상담 단계에서 사용 여부 먼저 확인", "브랜드 컬러 · 글꼴 · 모션으로 한 번 더 차별화"],
-        visual: "oneper" },
       { no: "14", title: "Years of agency craft", ko: "14년 에이전시",
         text: "2012년부터 LG, KT, Amore Pacific의 사이트를 만든 팀이 템플릿을 설계합니다.",
         points: ["대기업 · 브랜드 프로젝트 경험", "UX/UI · GUI · 개발까지 한 팀", "템플릿 이후 맞춤 제작으로 확장"],
@@ -107,6 +103,20 @@ const SITE6 = {
           "aEqP3bNJEFaPX5Dg_hurom_thumb.jpg", "aEqPrLNJEFaPX5DU_loc_thumb.jpg", "aEqQBLNJEFaPX5Dq_bifido_thumb.jpg",
           "aE0bLbNJEFaPX9jE_haegin_thumb.jpg", "aEqOt7NJEFaPX5Cx_sfoc_thumb.jpg", "aFzzH3fc4bHWivNw_LG_thumb.jpg",
         ].map(f => ({ src: work(f) })) },
+      { no: "19", title: "Brands we work with", ko: "함께한 브랜드 19곳",
+        text: "LG Electronics, LG Display, KT, Amore Pacific부터 작은 브랜드까지. 규모가 다른 브랜드들과 일하며 쌓은 기준을 템플릿에 그대로 담았습니다.",
+        points: ["대기업 · 글로벌 브랜드 프로젝트", "뷰티 · 헬스케어 · 리빙 · 테크 등 다양한 업종", "한 번의 런칭보다 오래가는 관계"],
+        visual: "brands",
+        brands: ["LG Electronics", "LG Display", "LX International", "Amore Pacific", "HS AD", "Interbrand", "KT", "Cosmax",
+          "L'occitane", "Hurom", "Bifido", "Chaevi", "Shangpree", "CTK Cosmetic", "MH Group", "ORKR", "Blank Corp.", "Infinite", "Think Thing Thank"] },
+      { no: "04", title: "Disciplines, one team", ko: "UX · UI · GUI · DEV",
+        text: "기획, 디자인, 개발을 나눠 맡기지 않습니다. 한 팀이 처음부터 끝까지 맡기 때문에 템플릿의 디테일이 오픈까지 그대로 유지됩니다.",
+        points: ["UX 전략 · 정보 구조 설계", "UI · GUI · 모션 디자인", "Front & Back-end 개발 · 퍼블리싱"],
+        visual: "team" },
+      { no: "05", title: "Live demos", ko: "실제로 움직이는 데모",
+        text: "정지된 캡처가 아니라 실제로 움직이는 사이트를 보고 고릅니다. 스크롤감, 모션, 호버까지 오픈될 모습 그대로 미리 확인할 수 있습니다.",
+        points: ["템플릿 5종 모두 라이브 데모 제공", "PC · 모바일에서 직접 확인", "마음에 드는 데모에서 바로 상담 연결"],
+        visual: "demos", demos: ["Signal", "Subtle", "Bold", "Möbius", "Mono"] },
     ],
   },
 
@@ -116,7 +126,7 @@ const SITE6 = {
     steps: [
       { no: "01", title: "Choose", ko: "템플릿 선택",
         text: "데모를 직접 스크롤해 보며 브랜드에 맞는 템플릿을 고릅니다. 고민되면 상담에서 업종과 목표를 듣고 어울리는 템플릿을 추천해 드립니다.",
-        points: ["모든 템플릿은 실제로 움직이는 데모로 확인", "업종·분위기별 추천 상담", "같은 업종·지역에 이미 쓰인 템플릿인지 확인"],
+        points: ["모든 템플릿은 실제로 움직이는 데모로 확인", "업종·분위기별 추천 상담", "브랜드에 맞춘 구성 제안"],
         visual: "choose" },
       { no: "02", title: "Send", ko: "자료 전달",
         text: "로고, 소개 문구, 이미지, 연락처만 보내 주세요. 문구가 정리되지 않았거나 이미지가 부족해도 괜찮습니다. 템플릿 구조에 맞게 함께 다듬어 드립니다.",
@@ -149,7 +159,7 @@ const SITE6 = {
   faq: {
     title: "FAQ",
     items: [
-      { q: "템플릿이면 다른 사이트와 비슷해 보이지 않나요?", a: "[가안] 한 템플릿은 같은 업종·지역에 한 곳만 판매합니다. 여기에 브랜드 컬러·글꼴·모션을 맞춰 완성하기 때문에, 같은 템플릿이라도 결과물은 하나뿐입니다." },
+      { q: "템플릿이면 다른 사이트와 비슷해 보이지 않나요?", a: "템플릿은 출발점일 뿐입니다. 에이전시 팀이 브랜드 컬러·글꼴·모션과 콘텐츠 구성까지 맞춰 완성하기 때문에, 같은 템플릿이라도 결과물은 하나뿐입니다." },
       { q: "직접 만들 줄 몰라도 괜찮나요?", a: "네. 템플릿을 고르고 자료만 보내 주시면 제작·세팅·오픈은 mono-form이 진행합니다." },
       { q: "비용과 제작 기간은 어떻게 되나요?", a: "템플릿과 필요한 범위에 따라 달라서, 상담을 통해 브랜드에 맞게 안내해 드립니다." },
       { q: "나중에 맞춤 제작으로 바꿀 수 있나요?", a: "네. 같은 팀이 만들기 때문에 템플릿 사이트를 그대로 확장해 맞춤 제작으로 이어갈 수 있습니다." },

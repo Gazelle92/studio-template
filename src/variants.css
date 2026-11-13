@@ -628,7 +628,7 @@ html[data-content="5"] .rec-row .text { color: var(--wave5c, inherit); transitio
    ========================================================================== */
 /* 첫 화면 버튼 */
 .intro6__ctas { position: absolute; left: var(--margin); top: 230px; z-index: 6; display: flex; gap: 10px; flex-wrap: wrap; }
-.pill4--ghost { background: transparent; color: #000; box-shadow: inset 0 0 0 1px #000; }
+.pill4--ghost { background: rgba(255, 255, 255, .5); color: #000; box-shadow: inset 0 0 0 1px #000; backdrop-filter: blur(6px); }
 .pill4--ghost:hover { background: #000; color: #fff; }
 .pill4 { transition: background-color .3s, color .3s; }
 button.pill4 { border: 0; cursor: pointer; }
@@ -849,8 +849,42 @@ html.demo6-open { overflow: hidden; }
   transform: scale(.9); opacity: .35; transition: transform .8s var(--ease4) calc(var(--i) * .06s), opacity .6s calc(var(--i) * .06s); }
 .step6[data-on="true"] .sv--mosaic img { transform: none; opacity: 1; }
 
+/* Why: 함께한 브랜드 — 이름 벽 */
+.sv--brands { flex-wrap: wrap; align-content: center; gap: 10px 22px; padding: 36px 40px; }
+.sv--brands span { font-weight: 800; font-size: clamp(15px, 1.3vw, 20px); letter-spacing: -.03em; color: #c9c9c9;
+  transition: color .5s calc(var(--i) * .04s); }
+.sv--brands span.is-big { font-size: clamp(22px, 2vw, 32px); }
+.step6[data-on="true"] .sv--brands span { color: #111; }
+/* Why: 한 팀 4분야 */
+.sv--team { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 34px; align-content: center; }
+.sv-disc { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 4px; padding: 18px 16px; border-radius: 12px; background: #f2f2f2;
+  transform: translateY(16px); opacity: .5; transition: transform .8s var(--ease4) calc(var(--i) * .1s), opacity .6s calc(var(--i) * .1s), background-color .6s, color .6s; }
+.sv-disc b { margin-top: 26px; font-size: 30px; font-weight: 800; letter-spacing: -.04em; }
+.sv-disc span:last-child { font-size: 12px; color: #888; }
+.sv-disc__ico { display: flex; gap: 4px; }
+.sv-disc__ico i { width: 10px; height: 10px; border-radius: 3px; background: #ccc; }
+.sv-disc--ui .sv-disc__ico i { border-radius: 0; }
+.sv-disc--gui .sv-disc__ico i { border-radius: 50%; }
+.sv-disc--dev .sv-disc__ico i { width: 14px; height: 4px; border-radius: 2px; margin-top: 3px; }
+.step6[data-on="true"] .sv-disc { transform: none; opacity: 1; }
+.step6[data-on="true"] .sv-disc--dev { background: #111; color: #fff; }
+.sv-team__line { position: absolute; left: 34px; right: 34px; top: 50%; height: 2px; background: #111; transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform 1.2s var(--ease4) .3s; }
+.step6[data-on="true"] .sv-team__line { transform: scaleX(1); }
+/* Why: 라이브 데모 목록 */
+.sv--demos { flex-direction: column; align-items: stretch; justify-content: center; gap: 8px; padding: 34px 40px; }
+.sv-demo { display: grid; grid-template-columns: 14px 1fr auto 20px; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 10px; background: #f2f2f2;
+  transform: translateX(-24px); opacity: .4; transition: transform .8s var(--ease4) calc(var(--i) * .08s), opacity .6s calc(var(--i) * .08s), background-color .4s; }
+.sv-demo b { font-size: 20px; font-weight: 800; letter-spacing: -.03em; }
+.sv-demo span { font-family: var(--f-mono); font-size: 10px; text-transform: uppercase; color: #888; }
+.sv-demo em { font-style: normal; font-weight: 700; }
+.sv-demo__dot { width: 8px; height: 8px; border-radius: 50%; background: #3ddc84; animation: sv-pulse 1.4s infinite; }
+.step6[data-on="true"] .sv-demo { transform: none; opacity: 1; }
+.step6[data-on="true"] .sv-demo:nth-child(4) { background: #111; color: #fff; }
+
 /* 모바일 */
 @media (max-width: 900px) {
+  .sv--team { grid-template-columns: repeat(2, 1fr); }
   .intro6__ctas { top: auto; bottom: 26vw; }
   .tpl6 { grid-template-columns: 1fr auto; row-gap: 10px; padding: 26px 0; }
   .tpl6__no, .tpl6__mood { display: none; }
@@ -870,3 +904,14 @@ html.demo6-open { overflow: hidden; }
 html.demo6-open .cursor5, html.demo6-open .cursor5__label { display: none; }
 html.demo6-open, html.demo6-open * { cursor: auto !important; }
 html.demo6-open button, html.demo6-open a { cursor: pointer !important; }
+
+/* 6안 첫 화면 카드: 실제 시안 화면 (1440×1800을 카드 폭에 맞게 축소) */
+.deck__demo { position: absolute; top: 0; left: 0; width: 1440px; height: 1800px; border: 0; pointer-events: none;
+  transform: scale(var(--deck-s, .3)); transform-origin: 0 0; background: #fff; }
+.deck__tag { position: absolute; left: 12px; bottom: 12px; z-index: 2; padding: 6px 10px; border-radius: 999px; background: #000; color: #fff;
+  font-family: var(--f-bold); font-size: 12px; font-weight: 700; }
+
+/* 6안: 첫 화면 덱이 스크롤해도 화면에 고정된 채 따라옴 (사라지는 건 v4.jsx Deck) */
+[data-page="6"] .deck { position: fixed; top: 12vh; z-index: 1; pointer-events: none; }
+[data-page="6"] .intro4__text, [data-page="6"] .intro6__ctas, [data-page="6"] .intro4__logo { z-index: 6; }
+[data-page="6"] .statement4 { position: relative; z-index: 2; }

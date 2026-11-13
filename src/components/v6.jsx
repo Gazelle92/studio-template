@@ -112,7 +112,32 @@ const INDUSTRIES = [
   ["법률사무소", "서초"], ["뷰티 살롱", "한남"], ["패션 브랜드", "압구정"],
 ];
 
-function StepVisual({ kind, images = [] }) {
+function StepVisual({ kind, images = [], brands = [], demos = [] }) {
+  if (kind === "brands") return (
+    <div className="sv sv--brands">
+      {brands.map((b, i) => <span key={b} className={i % 5 === 0 ? "is-big" : ""} style={{ "--i": i }}>{b}</span>)}
+    </div>
+  );
+  if (kind === "team") return (
+    <div className="sv sv--team">
+      {[["UX", "Strategy · IA", "ux"], ["UI", "Layout · System", "ui"], ["GUI", "Visual · Motion", "gui"], ["DEV", "Front · Back-end", "dev"]].map(([t, d, k], i) => (
+        <div key={t} className={`sv-disc sv-disc--${k}`} style={{ "--i": i }}>
+          <span className="sv-disc__ico" aria-hidden="true"><i /><i /><i /></span>
+          <b>{t}</b><span>{d}</span>
+        </div>
+      ))}
+      <div className="sv-team__line" />
+    </div>
+  );
+  if (kind === "demos") return (
+    <div className="sv sv--demos">
+      {demos.map((d, i) => (
+        <div key={d} className="sv-demo" style={{ "--i": i }}>
+          <i className="sv-demo__dot" /><b>{d}</b><span>Live demo</span><em>→</em>
+        </div>
+      ))}
+    </div>
+  );
   if (kind === "oneper") return (
     <div className="sv sv--oneper">
       {INDUSTRIES.map(([biz, area], i) => (
@@ -241,7 +266,7 @@ function SplitSteps6({ id, no, data }) {
       <div className="proc6__right">
         {data.steps.map(s => (
           <article className="step6" key={s.no}>
-            <div className="step6__visual"><StepVisual kind={s.visual} images={s.images} /></div>
+            <div className="step6__visual"><StepVisual kind={s.visual} images={s.images} brands={s.brands} demos={s.demos} /></div>
             <div className="step6__body">
               <div className="step6__head">
                 <span className="step6__no">{s.no}</span>
